@@ -1,0 +1,10 @@
+{
+  "name": "kmap-campus-navigation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KIIT campus room wayfinding site",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  }
+}
