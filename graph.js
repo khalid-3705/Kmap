@@ -6,7 +6,7 @@ export function roomFloor(id) {
   if (!id) return 0;
   if (id.startsWith('ENTRY-') || id.startsWith('GATE-')) return 0;
   if (id.startsWith('LIBRARY-')) return Number(id.at(-1));
-  if (/^(STAIR|LIFT|WC-|STAFF-|FACULTY-|SOCIETY-|THEATRE)/.test(id)) return Number(id.at(-1));
+  if (/^(STAIR|LIFT|WC-|STAFF-|ADMIN-|FACULTY-|SOCIETY-|THEATRE)/.test(id)) return Number(id.at(-1));
   return Number(id[1]);
 }
 

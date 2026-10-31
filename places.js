@@ -90,13 +90,17 @@ export function makePlaces(rooms) {
     }
 
     if (floor >= 1) {
-      for (const item of [
-        { id: `FACULTY-${floor}`, label: 'Faculty chambers · C201', mapLabel: 'Faculty', type: 'faculty', block: 'C', roomNumber: '01', x: 810, y: 345 },
-        { id: `SOCIETY-${floor}`, label: 'Society office · C203', mapLabel: 'Society office', type: 'office', block: 'C', roomNumber: '03', x: 810, y: 375 },
+      const floorFacilities = [
         { id: `THEATRE4-${floor}`, label: 'Lecture Theatre 4 · C211', mapLabel: 'LT4', type: 'lecture', block: 'C', roomNumber: '11', x: 655, y: 415 },
         { id: `THEATRE5-${floor}`, label: 'Lecture Theatre 5 · C212', mapLabel: 'LT5', type: 'lecture', block: 'C', roomNumber: '12', x: 755, y: 415 },
         { id: `THEATRE6-${floor}`, label: 'Lecture Theatre 6 · C213', mapLabel: 'LT6', type: 'lecture', block: 'C', roomNumber: '13', x: 655, y: 455 }
-      ]) places.push(makePlace(rooms, { ...item, floor, steps: 15 }));
+      ];
+      if (floor === 1) floorFacilities.push({ id: 'ADMIN-1', label: 'Dean / Admin office', mapLabel: 'Dean / Admin', type: 'office', block: 'C', x: 810, y: 375 });
+      if (floor === 2) floorFacilities.push(
+        { id: 'FACULTY-2', label: 'Faculty chambers · C201', mapLabel: 'Faculty', type: 'faculty', block: 'C', roomNumber: '01', x: 810, y: 345 },
+        { id: 'SOCIETY-2', label: 'Society office · C203', mapLabel: 'Society office', type: 'office', block: 'C', roomNumber: '03', x: 810, y: 375 }
+      );
+      for (const item of floorFacilities) places.push(makePlace(rooms, { ...item, floor, steps: 15 }));
     }
   }
 
