@@ -17,7 +17,8 @@ Open http://localhost:3000. No npm install is needed; the server uses Node.js bu
 - `index.html`, `style.css` — page structure and styling.
 - `app.js` — form handling, route instructions, and app startup.
 - `rooms.json` — room lists by floor and block.
-- `graph.js` — room IDs and weighted graph construction.
+- `places.js` — entrances, washrooms, stairs, lifts, lecture theatres, offices, faculty chambers, and library locations.
+- `graph.js` — room IDs and weighted graph construction. Adjacent room links use estimated weights from 10–25 steps; stair connections between floors use 50–80 steps.
 - `dijkstra.js` — shortest-path algorithm.
 - `renderer.js` — SVG floor-plan rendering and room positions.
 - `server.js` — local static-file server.

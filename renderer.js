@@ -16,9 +16,10 @@ export function floorConfig(floor, block) {
   }[block];
 }
 
-export function roomPoint(rooms, roomId) {
+export function roomPoint(rooms, roomId, places = []) {
   if (!roomId || roomId.startsWith('GATE-')) return null;
-  if (roomId.startsWith('LIBRARY-')) return [830, 300];
+  const place = places.find(item => item.id === roomId);
+  if (place) return [place.x, place.y];
   const floor = roomFloor(roomId), block = roomId[0];
   const list = rooms[floor]?.[block] ?? [];
   const index = list.indexOf(roomId.slice(2));
@@ -32,7 +33,7 @@ export function roomPoint(rooms, roomId) {
   return [config.x + pad + col * (width + gap) + width / 2, config.y + pad + row * (height + gap) + height / 2];
 }
 
-export function drawFloorMap({ rooms, floor, route, start, destination, onRoomClick }) {
+export function drawFloorMap({ rooms, places = [], floor, route, start, destination, onRoomClick }) {
   const names = FLOOR_NAMES;
   document.querySelector('#floorname').textContent = names[floor];
   document.querySelector('#floorsub').textContent = floor === 0
@@ -63,17 +64,18 @@ export function drawFloorMap({ rooms, floor, route, start, destination, onRoomCl
   const routeSegments = [];
   for (let i = 1; i < route.length; i++) {
     if (roomFloor(route[i - 1]) !== floor || roomFloor(route[i]) !== floor) continue;
-    const a = roomPoint(rooms, route[i - 1]), b = roomPoint(rooms, route[i]);
+    const a = roomPoint(rooms, route[i - 1], places), b = roomPoint(rooms, route[i], places);
     if (a && b) routeSegments.push(`<path d="M${a[0]} ${a[1]} L${b[0]} ${b[1]}"/>`);
   }
   if (routeSegments.length) shapes.push(`<g class="routeLine">${routeSegments.join('')}</g>`);
-  if (floor === 0) shapes.push('<path class="hall" d="M390 300 H500"/><text class="hallText" x="440" y="292">C block corridor</text><text class="entry" x="55" y="330">◉ A Block entry</text><text class="entry" x="790" y="470">◉ B Block entry</text>');
-  else {
-    shapes.push('<path class="hall" d="M380 365 H460 V295 H600 M350 260 V300 H460"/><text class="hallText" x="442" y="286">STAIRS · LIFTS</text><text class="entry" x="425" y="490">↓ Main gate / lower floors</text>');
-    if (floor >= 2) {
-      const library = `LIBRARY-${floor}`, selected = start === library || destination === library;
-      shapes.push(`<g class="roomNode" data-room="${library}" tabindex="0" role="button" aria-label="Choose Library"><rect class="${selected ? 'roomEnd' : route.includes(library) ? 'roomPath' : 'roomRect'}" x="790" y="280" width="82" height="38" rx="6"/><text class="roomText" x="831" y="303">Library</text></g>`);
-    }
+  if (floor === 0) shapes.push('<path class="hall" d="M390 300 H500"/><text class="hallText" x="440" y="292">C block corridor</text>');
+  else shapes.push('<path class="hall" d="M380 365 H460 V295 H600 M350 260 V300 H460"/><text class="hallText" x="442" y="286">CORRIDORS</text>');
+  for (const place of places.filter(item => item.floor === floor)) {
+    const selected = place.id === start || place.id === destination;
+    const active = route.includes(place.id);
+    const icon = ({ stair: 'S', lift: 'L', washroom: 'WC', entry: 'E', faculty: 'F', office: 'O', lecture: 'LT', library: 'LIB' })[place.type] ?? '•';
+    const label = place.shortLabel;
+    shapes.push(`<g class="poiNode ${selected ? 'selected' : active ? 'onRoute' : ''}" data-room="${place.id}" tabindex="0" role="button" aria-label="Choose ${place.label}"><title>${place.label}</title><circle class="poiDot ${place.type}" cx="${place.x}" cy="${place.y}" r="9"/><text class="poiIcon" x="${place.x}" y="${place.y + 3}">${icon}</text><text class="poiLabel" x="${place.x + 12}" y="${place.y + 3}">${label}</text></g>`);
   }
   svg.innerHTML = shapes.join('');
   svg.querySelectorAll('.roomNode').forEach(node => {

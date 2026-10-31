@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { buildGraph, makeRoomId } from './graph.js';
 import { findShortestPath } from './dijkstra.js';
+import { makePlaces } from './places.js';
 const rooms = JSON.parse(await readFile(new URL('./rooms.json', import.meta.url), 'utf8'));
-const graph = buildGraph(rooms);
+const graph = buildGraph(rooms, makePlaces(rooms));
 test('room IDs use block, floor, and two-digit room number', () => {
   assert.equal(makeRoomId(0, 'A', '12'), 'A012');
   assert.equal(makeRoomId(1, 'B', '06'), 'B106');
